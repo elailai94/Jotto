@@ -25,7 +25,7 @@ import javax.swing.BoxLayout;
 
 public class Jotto {
    public static void main(String[] args) {
-   	  // Creates a model and initializes it
+   	// Creates a model and initializes it
       JottoModel model = new JottoModel();
       
       // Creates all the views and tells them about model and controller
@@ -51,6 +51,7 @@ public class Jotto {
       frame.getContentPane().setLayout(new BorderLayout());
       frame.getContentPane().add(infoView, BorderLayout.NORTH);
       JPanel gameView = new JPanel();
+      gameView.setBackground(Color.decode("0x222533"));
       gameView.setLayout(new BoxLayout(gameView, BoxLayout.X_AXIS));
       gameView.add(lettersView);
       gameView.add(guessesView);
@@ -58,8 +59,8 @@ public class Jotto {
       frame.getContentPane().add(gameView, BorderLayout.CENTER);
       frame.getContentPane().add(guessView, BorderLayout.SOUTH);
       frame.pack();
-	  frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	  frame.setVisible(true);
+	   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	   frame.setVisible(true);
    } // main
 
    // Makes a menu bar
@@ -107,7 +108,7 @@ public class Jotto {
                String target = "";
                
                while (true) {
-               	  target = JOptionPane.showInputDialog(aFrame,
+               	target = JOptionPane.showInputDialog(aFrame,
                	     "Enter a 5-letter word: ",
                	     "Set Target Word",
                	     JOptionPane.PLAIN_MESSAGE);

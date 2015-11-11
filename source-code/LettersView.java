@@ -10,8 +10,8 @@
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
 
 import javax.swing.JPanel;
 import javax.swing.BorderFactory;
@@ -32,11 +32,12 @@ public class LettersView extends JPanel implements Observer {
       super();
       model = aModel;
       layoutView();
+      registerControllers();
    } // Constructor
 
    // Lays the widgets out in the view
    private void layoutView() {
-      setBackground(Color.decode("0x222533"));
+      setOpaque(false);
       Border emptyBorder = BorderFactory.createEmptyBorder(50, 20, 20, 10);
       TitledBorder titledBorder =
          BorderFactory.createTitledBorder(emptyBorder, "Letters Guessed");
@@ -58,15 +59,32 @@ public class LettersView extends JPanel implements Observer {
       } // for
    } // layoutView
 
+   // Registers controllers for each widget
+   private void registerControllers() {
+      for (JLabel letterLabel : lettersLabels.values()) {
+         letterLabel.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+               char letterChar = letterLabel.getText().charAt(0);
+               int letterFrequency = model.getLetterFrequency(letterChar);
+            } // mouseEntered
+
+            public void mouseExited(MouseEvent e) {
+               ;//System.out.println("Detected mouse exited on: " + letterLabel.getText());
+            } // mouseExited
+         });
+      } // for
+      ;
+   } // registerControllers
+
    // Updates the view using info from the model
    public void update(Observable o, Object arg) {
       HashSet<Character> guessLetters = model.getGuessLetters();
       
       for (char c : guessLetters) {
-      	 JLabel letterLabel = lettersLabels.get(c);
-      	 letterLabel.setOpaque(true);
-      	 letterLabel.setBackground(Color.decode("0x00ABA9"));
-      	 letterLabel.setBorder(null);
+      	JLabel letterLabel = lettersLabels.get(c);
+      	letterLabel.setOpaque(true);
+      	letterLabel.setBackground(Color.decode("0x00ABA9"));
+      	letterLabel.setBorder(null);
       } // for
    } // update
 }

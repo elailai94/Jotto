@@ -41,7 +41,7 @@ public class SuggestionsView extends JPanel implements Observer {
 
    // Lays the widget out in the view
    private void layoutView() {
-   	setBackground(Color.decode("0x222533"));
+      setOpaque(false);
    	Border emptyBorder = BorderFactory.createEmptyBorder(50, 10, 20, 20);
       TitledBorder titledBorder =
          BorderFactory.createTitledBorder(emptyBorder, "Words Suggested");
@@ -51,12 +51,13 @@ public class SuggestionsView extends JPanel implements Observer {
       setBorder(titledBorder);
       setLayout(new GridLayout(1, 1));
 
-      suggestionsList = new JList(model.getSuggestionsListModel());
+      suggestionsList = new JList<String>(model.getSuggestionsListModel());
       JScrollPane scrollPane = new JScrollPane(suggestionsList);
       scrollPane.setPreferredSize(new Dimension(220, getHeight()));
       add(scrollPane);
    } // layoutView
 
+   // Registers controllers for each widget
    private void registerControllers() {
       suggestionsList.addMouseListener(new MouseAdapter() {
       	 public void mouseClicked(MouseEvent e) {
@@ -64,7 +65,7 @@ public class SuggestionsView extends JPanel implements Observer {
             if (e.getClickCount() == 2) {
                int index = list.locationToIndex(e.getPoint());
                if (index >= 0) {
-               	  DefaultListModel suggestionsListModel =
+               	  DefaultListModel<String> suggestionsListModel =
                	     model.getSuggestionsListModel();
                	  String guess =
                	     suggestionsListModel.getElementAt(index).toString();
@@ -77,6 +78,6 @@ public class SuggestionsView extends JPanel implements Observer {
 
    // Updates the view using info from the model
    public void update(Observable o, Object arg) {
-   	  ;
+   	;
    } // update
 }

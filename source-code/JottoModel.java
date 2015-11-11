@@ -11,6 +11,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.table.DefaultTableModel;
 
 import java.util.Observable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,20 +26,24 @@ public class JottoModel extends Observable {
     private static WordList words = new WordList("words.txt");
     private static LEVELS difficulty = LEVELS.Easy;
     private static Word target = words.randomWord(difficulty.ordinal());
+    private static HashMap<Character, Integer> lettersFrequencies =
+       new HashMap<Character, Integer>();
     private static String input = "";
-    private static DefaultListModel suggestionsListModel = new DefaultListModel();
+    private static DefaultListModel<String> suggestionsListModel =
+       new DefaultListModel<String>();
     private static String guess = "";
     private static int guessCount = 0;
-    private static boolean[] exactMatches = {false, false, false, false, false};
     private static int exactMatchesCount = 0;
-    private static boolean[] partialMatches = {false, false, false, false, false};
     private static int partialMatchesCount = 0;
     private static DefaultTableModel guessesTableModel = new DefaultTableModel();
+    private static HashMap<Character, Boolean> lettersGuessed =
+       new HashMap<Character, Boolean>();
     private static boolean started = false; 
     private static boolean won = false;
 
     JottoModel() {
        System.out.println(target.getWord());
+       findLettersFrequencies();
        updateSuggestionsListModel();
        initializeGuessesTableModel();
        setChanged();
@@ -61,30 +66,20 @@ public class JottoModel extends Observable {
        return difficulty.name();
     } // getLevelStr
 
+    // Returns the frequency that the letter occurs in the target
+    public int getLetterFrequency(char aLetter) {
+       return lettersFrequencies.get(aLetter);
+    } // getLetterFrequency
+
     // Returns the suggestions list model
-    public DefaultListModel getSuggestionsListModel() {
+    public DefaultListModel<String> getSuggestionsListModel() {
        return suggestionsListModel;
     } // getSuggestionsListModel
-
-    // Returns the guess
-    public String getGuess() {
-       return guess;
-    } // getGuess
 
     // Returns the number of guesses left
     public int getNumOfGuessesLeft() {
        return (NUM_GUESSES - guessCount);
     } // getNumOfGuessesLeft
-
-    // Returns the number of exact matches for the guess
-    public int getExactMatchesCount() {
-       return exactMatchesCount;
-    } // getExactMatchesCount
-
-    // Returns the number of partial matches for the guess
-    public int getPartialMatchesCount() {
-       return partialMatchesCount;
-    } // getPartialMatchesCount
 
     // Returns the letters of the alphabet in the guess
     public HashSet<Character> getGuessLetters() {
@@ -136,7 +131,23 @@ public class JottoModel extends Observable {
     // Sets the target to a new string
     public void setTarget(String aTarget) {
        target = new Word(aTarget.toUpperCase(), LEVELS.Easy.ordinal());
+       findLettersFrequencies();
+       setChanged();
+       notifyObservers();
     } // setTarget
+
+    // Finds the frequencies with which each letter in the alphabet
+    // occurs in the target
+    private void findLettersFrequencies() {       
+       for (char c = 'A'; c <= 'Z'; c++) {
+          lettersFrequencies.put(c, 0);
+       } // for
+
+       for (char c : target.getWord().toCharArray()) {
+          int newLetterFrequency = (lettersFrequencies.get(c) + 1);
+          lettersFrequencies.put(c, newLetterFrequency);
+       } // for
+    } // findLettersFrequencies
 
     // Sets the input to a new string
     public void setInput(String anInput) {
@@ -151,12 +162,10 @@ public class JottoModel extends Observable {
     // the input
     private void updateSuggestionsListModel() {
        ArrayList<String> autoSuggestedWords = new ArrayList<String>();
-       StartsWithPredicate test = new StartsWithPredicate(input);
+       StartsWithPredicate test = new StartsWithPredicate(input, difficulty.ordinal());
 
        for (Word word : words.getWords(test)) {
-       	  if (word.getDifficulty() == difficulty.ordinal()) {
-       	  	 autoSuggestedWords.add(word.getWord());
-       	  } // if
+          autoSuggestedWords.add(word.getWord());
        } // for
 
        Collections.sort(autoSuggestedWords);
@@ -172,6 +181,9 @@ public class JottoModel extends Observable {
        guess = aGuess.toUpperCase();
        guessCount += 1;
        started = true;
+       exactMatchesCount = 0;
+       partialMatchesCount = 0;
+       findMatches();
        updateGuessesTableModel();
        setChanged();
        notifyObservers();
@@ -185,14 +197,24 @@ public class JottoModel extends Observable {
        // Finds exact matches between the guess and the target
        for (int i = 0; i < guess.length(); i++) {
        	  if (guess.charAt(i) == target.getWord().charAt(i)) {
-             exactMatches[i] = true;
              exactMatchesCount += 1;
              targetLetterParticipated[i] = true;
        	  } // if
        } // for
 
        // Finds partial matches between the guess and the target
-
+       for (int i = 0; i < guess.length(); i++) {
+          for (int j = 0; j < guess.length(); j++) {
+             if (!targetLetterParticipated[j]) {
+                if (guess.charAt(i) == target.getWord().charAt(j)) {
+                   partialMatchesCount += 1;
+                   targetLetterParticipated[j] = true;
+                } // if
+             } else {
+                j++;
+             } // if
+          } // for
+       } // for
     } // findMatches
 
     // Updates the guesses table model with a new row
@@ -202,6 +224,17 @@ public class JottoModel extends Observable {
        String[] row = {guess, exactMatchesCountStr, partialMatchesCountStr};
        guessesTableModel.addRow(row);
     } // updateGuessesTableModel
+
+    // Finds
+    private void findLettersGuessed() {
+       HashSet<Character> guessLetters = new HashSet<Character>();
+       
+       for (char c : guess.toCharArray()) {
+          guessLetters.add(c);
+       } // for
+       
+       return guessLetters;
+    } // findLettersGuessed
 
     // Resets the model
     public void reset() {

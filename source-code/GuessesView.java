@@ -36,7 +36,7 @@ public class GuessesView extends JPanel implements Observer {
 
    // Lays the widgets out in the view
    private void layoutView() {
-      setBackground(Color.decode("0x222533"));
+      setOpaque(false);
       Border emptyBorder = BorderFactory.createEmptyBorder(50, 10, 20, 10);
       TitledBorder titledBorder =
          BorderFactory.createTitledBorder(emptyBorder, "Words Guessed");

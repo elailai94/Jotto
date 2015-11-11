@@ -8,7 +8,7 @@
 
 all:
 	@echo "Compiling..."
-	javac *.java
+	javac -Xlint:unchecked *.java
 
 run: all
 	@echo "Running..."
