@@ -81,7 +81,6 @@ public class SuggestionsView extends JPanel implements IView {
    // Disables some menu items once the game starts
    // (i.e.: the player makes their first valid guess)
    private void disableMenuItems() {
-      frame.getJMenuBar().getMenu(0).getItem(2).setEnabled(false);
       for (int i = 0; i < 4; i++) {
          frame.getJMenuBar().getMenu(1).getItem(i).setEnabled(false);
       } // for

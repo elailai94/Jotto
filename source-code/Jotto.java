@@ -18,7 +18,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
-import javax.swing.JOptionPane;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JPanel;
@@ -49,9 +48,6 @@ public class Jotto {
       model.addObserver(suggestionsView);
       model.addObserver(guessView);
       
-      // Notifies all the views that they're connected to the model
-      // model.notifyObservers();
-
       // Sets up other elements in the window
       frame.getContentPane().setLayout(new BorderLayout());
       frame.getContentPane().add(infoView, BorderLayout.NORTH);
@@ -78,13 +74,10 @@ public class Jotto {
       JMenu game = new JMenu("Game");
       final JMenuItem newGame = new JMenuItem("New Game");
       newGame.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK));
-      final JMenuItem setTargetWord = new JMenuItem("Set Target Word");
       final JMenuItem quit = new JMenuItem("Quit");
       quit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, KeyEvent.CTRL_DOWN_MASK));
 
       game.add(newGame);
-      game.addSeparator();
-      game.add(setTargetWord);
       game.addSeparator();
       game.add(quit);
 
@@ -116,7 +109,6 @@ public class Jotto {
          public void actionPerformed(ActionEvent e) {
             if (newGame.getText().equals("New Game")) {
                // Enables some menu items
-               setTargetWord.setEnabled(true);
                easy.setEnabled(true);
                medium.setEnabled(true);
                hard.setEnabled(true);
@@ -127,41 +119,6 @@ public class Jotto {
                assert false;
             } // if
          } // actionPerformed
-      });
-
-      setTargetWord.addActionListener(new ActionListener() {
-      	 public void actionPerformed(ActionEvent e) {
-            if (setTargetWord.getText().equals("Set Target Word")) {
-               
-               while (true) {
-               	String target = JOptionPane.showInputDialog(aFrame,
-               	   "Enter a 5-letter word: ",
-               	   "Set Target Word",
-               	   JOptionPane.PLAIN_MESSAGE);
-                  
-                  if (target == null) {
-                     break;
-                  } else if (!isCorrectLength(target)) {
-                     showErrorMessageDialog(aFrame,
-                        "You haven't entered a 5-letter word. Please try again.");
-                  } else if (!containsOnlyLetters(target)) {
-                     showErrorMessageDialog(aFrame,
-                        "You haven't entered a valid word. Please try again.");
-                  } else if (!isInWordList(aModel, target)) {
-                     showErrorMessageDialog(aFrame,
-                        ("You haven't entered a word that is in the dictionary.\n" +
-                        "You might like to try one of the words listed under\n" +
-                        "'Words Suggested'. Please try again."));
-                  } else {
-                     aModel.setTarget(target);
-                     break;
-                  } // if
-               } // while
-
-            } else {
-               assert false;
-            }// if
-      	 } // actionPerformed
       });
 
       quit.addActionListener(new ActionListener() {
@@ -216,36 +173,4 @@ public class Jotto {
 
       return menuBar;
    } // makeMenuBar
-
-   // Checks if a string contains only five letters
-   private static boolean isCorrectLength(String aString) {
-      if (aString.length() == JottoModel.NUM_LETTERS) {
-         return true;
-      } else {
-         return false;
-      } // if
-   } // isCorrectLength
-
-   // Checks if a string contains only letters
-   private static boolean containsOnlyLetters(String aString) {
-      for (char c : aString.toCharArray()) {
-      	 if (!Character.isLetter(c)) {
-      	    return false;
-      	 } // if
-      } // for
-      return true;
-   } // containsOnlyLetters
-
-   // Checks if a string is in the list of words
-   private static boolean isInWordList(JottoModel aModel, String aString) {
-      return aModel.isInWords(aString);
-   } // isInWordList
-
-   // Displays an error message dialog to the screen
-   private static void showErrorMessageDialog(JFrame aFrame, String errorMessage) {
-      JOptionPane.showMessageDialog(aFrame,
-         errorMessage,
-         "Input Error",
-         JOptionPane.ERROR_MESSAGE);
-   } // showErrorMessageDialog
 }
