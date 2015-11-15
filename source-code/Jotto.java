@@ -1,9 +1,8 @@
 //==============================================================================
-// CS349 Assignment 03, Jotto
+// Jotto
 //
-// @description: A directly manipulatable excavator in Java
-// @author: Ah Hoe Lai
-// @userid: ahlai
+// @description: An implementation of Jotto in Java and Swing
+// @author: Elisha Lai
 // @version: 1.0 05/11/2015
 //==============================================================================
 
