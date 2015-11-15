@@ -1,10 +1,9 @@
 //==============================================================================
-// CS349 Assignment 03, Jotto
+// Jotto
 //
 // @description: Module for providing functions to work with IWordPredicate
 // interface
-// @author: Ah Hoe Lai
-// @userid: ahlai
+// @author: Elisha Lai
 // @version: 1.0 05/11/2015
 //==============================================================================
 
@@ -14,7 +13,5 @@
 public interface IWordPredicate {
 
    // Does the given Word meet a condition?
-   // @param w The word-difficulty object to test
-   // @return true if it meets the condition; false otherwise.
    public boolean isOK(Word aWord);
 }
