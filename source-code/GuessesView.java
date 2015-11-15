@@ -24,7 +24,7 @@ import javax.swing.JScrollPane;
 import java.util.Observable;
 import java.util.Observer;
 
-public class GuessesView extends JPanel implements Observer {
+public class GuessesView extends JPanel implements IView {
    private JottoModel model;
    private JTable guessesTable;
 
@@ -45,16 +45,21 @@ public class GuessesView extends JPanel implements Observer {
       setBorder(titledBorder);
       setLayout(new GridLayout(1, 1));
       
+      // Lays the guesses table out in the view
       guessesTable = new JTable(model.getGuessesTableModel());
       guessesTable.getTableHeader().setReorderingAllowed(false);
       guessesTable.getTableHeader().setResizingAllowed(false);
+      guessesTable.setFocusable(false);
+      guessesTable.setRowSelectionAllowed(false);
+      guessesTable.setColumnSelectionAllowed(false);
+      guessesTable.setCellSelectionEnabled(false);
       JScrollPane scrollPane = new JScrollPane(guessesTable);
       scrollPane.setPreferredSize(new Dimension(220, getHeight()));
       add(scrollPane);
    } // layoutView
 
    // Updates the view using info from the model
-   public void update(Observable o, Object arg) {
+   public void update() {
       ;
    } // update
 }

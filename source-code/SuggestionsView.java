@@ -16,6 +16,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 
 import javax.swing.JPanel;
+import javax.swing.JFrame;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.BorderFactory;
@@ -28,12 +29,14 @@ import java.util.Observer;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class SuggestionsView extends JPanel implements Observer {
+public class SuggestionsView extends JPanel implements IView {
+   private JFrame frame;
    private JottoModel model;
    private JList suggestionsList;
 
-   public SuggestionsView(JottoModel aModel) {
+   public SuggestionsView(JFrame aFrame, JottoModel aModel) {
       super();
+      frame = aFrame;
       model = aModel;
       layoutView();
       registerControllers();
@@ -51,6 +54,7 @@ public class SuggestionsView extends JPanel implements Observer {
       setBorder(titledBorder);
       setLayout(new GridLayout(1, 1));
 
+      // Lays the word suggestions list out in the view
       suggestionsList = new JList<String>(model.getSuggestionsListModel());
       JScrollPane scrollPane = new JScrollPane(suggestionsList);
       scrollPane.setPreferredSize(new Dimension(220, getHeight()));
@@ -65,6 +69,7 @@ public class SuggestionsView extends JPanel implements Observer {
             if (e.getClickCount() == 2) {
                int index = list.locationToIndex(e.getPoint());
                if (index >= 0) {
+                    disableMenuItems();
                	  DefaultListModel<String> suggestionsListModel =
                	     model.getSuggestionsListModel();
                	  String guess =
@@ -76,8 +81,17 @@ public class SuggestionsView extends JPanel implements Observer {
       });
    } // registerControllers
 
+   // Disables some menu items once the game starts
+   // (i.e.: the player makes their first valid guess)
+   private void disableMenuItems() {
+      frame.getJMenuBar().getMenu(0).getItem(2).setEnabled(false);
+      for (int i = 0; i < 4; i++) {
+         frame.getJMenuBar().getMenu(1).getItem(i).setEnabled(false);
+      } // for
+   } // disableMenuItems
+
    // Updates the view using info from the model
-   public void update(Observable o, Object arg) {
+   public void update() {
    	;
    } // update
 }

@@ -19,12 +19,10 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.JLabel;
 
-import java.util.Observable;
-import java.util.Observer;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Map;
 
-public class LettersView extends JPanel implements Observer {
+public class LettersView extends JPanel implements IView {
    private JottoModel model;
    private HashMap<Character, JLabel> lettersLabels = new HashMap<Character, JLabel>();
 
@@ -62,14 +60,29 @@ public class LettersView extends JPanel implements Observer {
    // Registers controllers for each widget
    private void registerControllers() {
       for (JLabel letterLabel : lettersLabels.values()) {
+         char letterChar = letterLabel.getText().charAt(0);
+         
          letterLabel.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
-               char letterChar = letterLabel.getText().charAt(0);
                int letterFrequency = model.getLetterFrequency(letterChar);
+               letterLabel.setOpaque(true);
+               letterLabel.setBackground(Color.decode("0x7E3878"));
+               letterLabel.setBorder(null);
+               letterLabel.setText(Integer.toString(letterFrequency));
             } // mouseEntered
 
             public void mouseExited(MouseEvent e) {
-               ;//System.out.println("Detected mouse exited on: " + letterLabel.getText());
+               if (model.getLetterGuessed(letterChar)) {
+                  letterLabel.setOpaque(true);
+                  letterLabel.setBackground(Color.decode("0x00ABA9"));
+                  letterLabel.setBorder(null);
+               } else {
+                  letterLabel.setOpaque(false);
+                  letterLabel.setBackground(null);
+                  letterLabel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+               } // if
+
+               letterLabel.setText(String.valueOf(letterChar));
             } // mouseExited
          });
       } // for
@@ -77,14 +90,19 @@ public class LettersView extends JPanel implements Observer {
    } // registerControllers
 
    // Updates the view using info from the model
-   public void update(Observable o, Object arg) {
-      HashSet<Character> guessLetters = model.getGuessLetters();
-      
-      for (char c : guessLetters) {
-      	JLabel letterLabel = lettersLabels.get(c);
-      	letterLabel.setOpaque(true);
-      	letterLabel.setBackground(Color.decode("0x00ABA9"));
-      	letterLabel.setBorder(null);
+   public void update() {
+      for (Map.Entry<Character, Boolean> entry : model.getLettersGuessed().entrySet()) {
+         JLabel letterLabel = lettersLabels.get(entry.getKey());
+
+         if (entry.getValue()) {
+            letterLabel.setOpaque(true);
+            letterLabel.setBackground(Color.decode("0x00ABA9"));
+            letterLabel.setBorder(null);
+         } else {
+            letterLabel.setOpaque(false);
+            letterLabel.setBackground(null);
+            letterLabel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+         } // if
       } // for
    } // update
 }

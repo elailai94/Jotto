@@ -10,13 +10,11 @@
 import javax.swing.DefaultListModel;
 import javax.swing.table.DefaultTableModel;
 
-import java.util.Observable;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class JottoModel extends Observable {
+public class JottoModel {
 	public static int NUM_LETTERS = 5;
 	public static int NUM_GUESSES = 10;
     public static enum LEVELS {
@@ -35,26 +33,37 @@ public class JottoModel extends Observable {
     private static int guessCount = 0;
     private static int exactMatchesCount = 0;
     private static int partialMatchesCount = 0;
-    private static DefaultTableModel guessesTableModel = new DefaultTableModel();
+    private static DefaultTableModel guessesTableModel =
+       new DefaultTableModel() {
+          public boolean isCellEditable(int row, int col) {
+             return false;
+          } // isCellEditable
+       };
     private static HashMap<Character, Boolean> lettersGuessed =
        new HashMap<Character, Boolean>();
-    private static boolean started = false; 
-    private static boolean won = false;
+    private static boolean resetStatus = false;
+    private static ArrayList<IView> views = new ArrayList<IView>();
 
     JottoModel() {
-       System.out.println(target.getWord());
        findLettersFrequencies();
        updateSuggestionsListModel();
        initializeGuessesTableModel();
-       setChanged();
+       initializeLettersGuessed();
     } // Constructor
 
     // Initializes the guesses table model
-    public void initializeGuessesTableModel() {
+    private void initializeGuessesTableModel() {
        guessesTableModel.addColumn("Words");
-       guessesTableModel.addColumn("Exact Matches");
-       guessesTableModel.addColumn("Partial Matches");
+       guessesTableModel.addColumn("Exact");
+       guessesTableModel.addColumn("Partial");
     } // initializeGuessesTableModel
+
+    // Initializes the letters guessed
+    private void initializeLettersGuessed() {
+       for (char c = 'A'; c <= 'Z'; c++) {
+          lettersGuessed.put(c, false);
+       } // for
+    } // initializeLettersGuessed
 
     // Returns the difficulty as a numerical representation
     public int getDifficultyNum() {
@@ -66,6 +75,11 @@ public class JottoModel extends Observable {
        return difficulty.name();
     } // getLevelStr
 
+    // Returns the target
+    public String getTarget() {
+      return target.getWord();
+    } // getTarget
+
     // Returns the frequency that the letter occurs in the target
     public int getLetterFrequency(char aLetter) {
        return lettersFrequencies.get(aLetter);
@@ -76,36 +90,40 @@ public class JottoModel extends Observable {
        return suggestionsListModel;
     } // getSuggestionsListModel
 
+    // Returns the guess count
+    public int getGuessCount() {
+       return guessCount;
+    } // getGuessCount
+
     // Returns the number of guesses left
     public int getNumOfGuessesLeft() {
        return (NUM_GUESSES - guessCount);
     } // getNumOfGuessesLeft
-
-    // Returns the letters of the alphabet in the guess
-    public HashSet<Character> getGuessLetters() {
-       HashSet<Character> guessLetters = new HashSet<Character>();
-       
-       for (char c : guess.toCharArray()) {
-       	  guessLetters.add(c);
-       } // for
-       
-       return guessLetters;
-    } // getGuessLetters
 
     // Returns the guesses table model
     public DefaultTableModel getGuessesTableModel() {
        return guessesTableModel;
     } // getGuessesTableModel
 
-    // Checks if a game has started
-    public boolean hasStarted() {
-       return started;
-    } // hasStarted
+    // Returns the letters guessed
+    public HashMap<Character, Boolean> getLettersGuessed() {
+       return lettersGuessed;
+    } // getLettersGuessed
+
+    // Returns whether the letter has been guessed or not
+    public boolean getLetterGuessed(char aLetter) {
+       return lettersGuessed.get(aLetter);
+    } // getLetterGuessed
 
     // Checks if a game has been won
     public boolean isWon() {
-       return won;
+       return guess.equals(target.getWord());
     } // isWon
+
+    // Returns the reset status
+    public boolean getResetStatus() {
+       return resetStatus;
+    } // getReset
 
     // Sets the difficulty to a new difficulty level
     public void setDifficulty(LEVELS aLevel) {
@@ -117,10 +135,9 @@ public class JottoModel extends Observable {
        } // if
 
        regenerateTarget();
+       findLettersFrequencies();
        updateSuggestionsListModel();
-       setChanged();
        notifyObservers();
-       System.out.println(target.getWord() + ", " + target.getDifficulty());
     } // setLevel
 
     // Regenerates the target randomly from words
@@ -130,9 +147,8 @@ public class JottoModel extends Observable {
 
     // Sets the target to a new string
     public void setTarget(String aTarget) {
-       target = new Word(aTarget.toUpperCase(), LEVELS.Easy.ordinal());
+       target = new Word(aTarget.toUpperCase(), difficulty.ordinal());
        findLettersFrequencies();
-       setChanged();
        notifyObservers();
     } // setTarget
 
@@ -153,7 +169,6 @@ public class JottoModel extends Observable {
     public void setInput(String anInput) {
        input = anInput.toUpperCase();
        updateSuggestionsListModel();
-       setChanged();
        notifyObservers();
     } // setInput
 
@@ -161,13 +176,20 @@ public class JottoModel extends Observable {
     // auto-suggested words with the difficulty that start with
     // the input
     private void updateSuggestionsListModel() {
+       ArrayList<String> guesses = new ArrayList<String>();
+       
+       for (int i = 0; i < guessesTableModel.getRowCount(); i++) {
+          guesses.add((String) guessesTableModel.getValueAt(i, 0));
+       } // for
+
        ArrayList<String> autoSuggestedWords = new ArrayList<String>();
        StartsWithPredicate test = new StartsWithPredicate(input, difficulty.ordinal());
-
+       
        for (Word word : words.getWords(test)) {
           autoSuggestedWords.add(word.getWord());
        } // for
 
+       autoSuggestedWords.removeAll(guesses);
        Collections.sort(autoSuggestedWords);
 
        suggestionsListModel.removeAllElements();
@@ -180,12 +202,12 @@ public class JottoModel extends Observable {
     public void setGuess(String aGuess) {
        guess = aGuess.toUpperCase();
        guessCount += 1;
-       started = true;
        exactMatchesCount = 0;
        partialMatchesCount = 0;
        findMatches();
        updateGuessesTableModel();
-       setChanged();
+       updateSuggestionsListModel();
+       findLettersGuessed();
        notifyObservers();
     } // setGuess
 
@@ -226,20 +248,42 @@ public class JottoModel extends Observable {
     } // updateGuessesTableModel
 
     // Finds
-    private void findLettersGuessed() {
-       HashSet<Character> guessLetters = new HashSet<Character>();
-       
+    private void findLettersGuessed() {       
        for (char c : guess.toCharArray()) {
-          guessLetters.add(c);
+          lettersGuessed.put(c, true);
        } // for
-       
-       return guessLetters;
     } // findLettersGuessed
+
+    // Checks if a word is in the list of words
+    public boolean isInWords(String aWord) {
+       return words.contains(aWord.toUpperCase());
+    } // isInWords
 
     // Resets the model
     public void reset() {
        regenerateTarget();
+       findLettersFrequencies();
        guess = "";
        guessCount = 0;
+       partialMatchesCount = 0;
+       exactMatchesCount = 0;
+       guessesTableModel.setRowCount(0);
+       initializeLettersGuessed();
+       resetStatus = true;
+       notifyObservers();
+       resetStatus = false;
     } // reset
+
+    // Adds a view observer to the model
+    public void addObserver(IView aView) {
+       views.add(aView);
+       aView.update();
+    } // addObserver
+
+    // Updates all the views observing the model
+    private void notifyObservers() {
+       for (IView view : views) {
+          view.update();
+       } // for
+    } // notifyObservers
 }

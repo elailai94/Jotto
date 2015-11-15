@@ -20,10 +20,7 @@ import javax.swing.BoxLayout;
 import javax.swing.Box;
 import javax.swing.JLabel;
 
-import java.util.Observable;
-import java.util.Observer;
-
-public class InfoView extends JPanel implements Observer {
+public class InfoView extends JPanel implements IView {
    private JottoModel model;
    private JLabel difficultyLabel;
    private JLabel guessesLeftLabel;
@@ -62,7 +59,7 @@ public class InfoView extends JPanel implements Observer {
    } // layoutView
 
    // Updates the view using info from the model
-   public void update(Observable o, Object arg) {
+   public void update() {
    	  // Updates the difficulty indicator in the view
       String difficultyValue = model.getDifficultyStr();
       difficultyLabel.setText("Difficulty: " + difficultyValue);
