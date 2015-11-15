@@ -210,79 +210,80 @@ public class JottoModel {
       notifyObservers();
    } // setGuess
 
-    // Finds exact matches and partial matches between the guess
-    // and the target
-    private void findMatches() {
-       boolean[] targetLetterParticipated = {false, false, false, false, false};
+   // Finds exact matches and partial matches between the guess
+   // and the target
+   private void findMatches() {
+      boolean[] targetLetterParticipated = {false, false, false, false, false};
        
-       // Finds exact matches between the guess and the target
-       for (int i = 0; i < guess.length(); i++) {
-       	  if (guess.charAt(i) == target.getWord().charAt(i)) {
-             exactMatchesCount += 1;
-             targetLetterParticipated[i] = true;
-       	  } // if
-       } // for
+      // Finds exact matches between the guess and the target
+      for (int i = 0; i < guess.length(); i++) {
+       	if (guess.charAt(i) == target.getWord().charAt(i)) {
+            exactMatchesCount += 1;
+            targetLetterParticipated[i] = true;
+       	} // if
+      } // for
 
-       // Finds partial matches between the guess and the target
-       for (int i = 0; i < guess.length(); i++) {
-          for (int j = 0; j < guess.length(); j++) {
-             if (!targetLetterParticipated[j]) {
-                if (guess.charAt(i) == target.getWord().charAt(j)) {
-                   partialMatchesCount += 1;
-                   targetLetterParticipated[j] = true;
-                } // if
-             } else {
-                j++;
-             } // if
-          } // for
-       } // for
-    } // findMatches
+      // Finds partial matches between the guess and the target
+      for (int i = 0; i < guess.length(); i++) {
+         for (int j = 0; j < guess.length(); j++) {
+            if (!targetLetterParticipated[j]) {
+               if (guess.charAt(i) == target.getWord().charAt(j)) {
+                  partialMatchesCount += 1;
+                  targetLetterParticipated[j] = true;
+               } // if
+            } else {
+               j++;
+            } // if
+         } // for
+      } // for
+   } // findMatches
 
-    // Updates the guesses table model with a new row
-    private void updateGuessesTableModel() {
-       String exactMatchesCountStr = Integer.toString(exactMatchesCount);
-       String partialMatchesCountStr = Integer.toString(partialMatchesCount);
-       String[] row = {guess, exactMatchesCountStr, partialMatchesCountStr};
-       guessesTableModel.addRow(row);
-    } // updateGuessesTableModel
+   // Updates the guesses table model with a new row
+   private void updateGuessesTableModel() {
+      String exactMatchesCountStr = Integer.toString(exactMatchesCount);
+      String partialMatchesCountStr = Integer.toString(partialMatchesCount);
+      String[] row = {guess, exactMatchesCountStr, partialMatchesCountStr};
+      guessesTableModel.addRow(row);
+   } // updateGuessesTableModel
 
-    // Finds
-    private void findLettersGuessed() {       
-       for (char c : guess.toCharArray()) {
-          lettersGuessed.put(c, true);
-       } // for
-    } // findLettersGuessed
+   // Finds the letters of the alphabet that are guessed
+   private void findLettersGuessed() {       
+      for (char c : guess.toCharArray()) {
+         lettersGuessed.put(c, true);
+      } // for
+   } // findLettersGuessed
 
-    // Checks if a word is in the list of words
-    public boolean isInWords(String aWord) {
-       return words.contains(aWord.toUpperCase());
-    } // isInWords
+   // Checks if a word is in the list of words
+   public boolean isInWords(String aWord) {
+      return words.contains(aWord.toUpperCase());
+   } // isInWords
 
-    // Resets the model
-    public void reset() {
-       regenerateTarget();
-       findLettersFrequencies();
-       guess = "";
-       guessCount = 0;
-       partialMatchesCount = 0;
-       exactMatchesCount = 0;
-       guessesTableModel.setRowCount(0);
-       initializeLettersGuessed();
-       resetStatus = true;
-       notifyObservers();
-       resetStatus = false;
-    } // reset
+   // Resets the model
+   public void reset() {
+      regenerateTarget();
+      findLettersFrequencies();
+      guess = "";
+      guessCount = 0;
+      partialMatchesCount = 0;
+      exactMatchesCount = 0;
+      guessesTableModel.setRowCount(0);
+      initializeLettersGuessed();
+      resetStatus = true;
+      notifyObservers();
+      resetStatus = false;
+   } // reset
 
-    // Adds a view observer to the model
-    public void addObserver(IView aView) {
-       views.add(aView);
-       aView.update();
-    } // addObserver
+   // Adds a view observer to the model
+   public void addObserver(IView aView) {
+      views.add(aView);
+      aView.update();
+   } // addObserver
 
-    // Updates all the views observing the model
-    private void notifyObservers() {
-       for (IView view : views) {
-          view.update();
-       } // for
-    } // notifyObservers
+   // Updates all the views observing the model
+   private void notifyObservers() {
+      for (IView view : views) {
+         view.update();
+      } // for
+   } // notifyObservers
+   
 }
