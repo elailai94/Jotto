@@ -28,10 +28,10 @@ public interface IWordList {
    
    // Find one word that passes the given test; the test is typically
    // given by a Hint object (which implements IWordPredicate).  
-   // The method should start
-   // with a random word in the list and then proceed sequentially through
-   // the list until it either finds a word that passes the test or it
-   // it exhausts the list, in which case it returns null.
+   // The method should start with a random word in the list and then 
+   // proceed sequentially through the list until it either finds a word
+   // that passes the test or it exhausts the list, in which case it
+   // returns null.
    public Word getWord(IWordPredicate test);
    
    // Find all the words that pass the given test; the test is typically
