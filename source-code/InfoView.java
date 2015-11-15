@@ -1,10 +1,9 @@
 //==============================================================================
-// CS349 Assignment 03, Jotto
+// Jotto
 //
 // @description: Module for providing functions to work with InfoView
 // objects
-// @author: Ah Hoe Lai
-// @userid: ahlai
+// @author: Elisha Lai
 // @version: 1.0 05/11/2015
 //==============================================================================
 
