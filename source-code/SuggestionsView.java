@@ -23,8 +23,6 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.JScrollPane;
 
-import java.util.Observable;
-import java.util.Observer;
 import java.util.ArrayList;
 import java.util.Collections;
 
