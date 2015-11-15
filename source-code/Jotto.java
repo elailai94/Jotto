@@ -67,8 +67,8 @@ public class Jotto {
       frame.getContentPane().add(guessView, BorderLayout.SOUTH);
       frame.setMinimumSize(new Dimension(900, 600));
       frame.pack();
-	   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	   frame.setVisible(true);
+      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      frame.setVisible(true);
    } // main
 
    // Makes a menu bar
@@ -114,7 +114,7 @@ public class Jotto {
 
       newGame.addActionListener(new ActionListener() {
          public void actionPerformed(ActionEvent e) {
-         	if (newGame.getText().equals("New Game")) {
+            if (newGame.getText().equals("New Game")) {
                // Enables some menu items
                setTargetWord.setEnabled(true);
                easy.setEnabled(true);
@@ -123,9 +123,9 @@ public class Jotto {
                any.setEnabled(true);
 
                aModel.reset();
-         	} else {
-         	   assert false;
-         	} // if
+            } else {
+               assert false;
+            } // if
          } // actionPerformed
       });
 
@@ -166,11 +166,11 @@ public class Jotto {
 
       quit.addActionListener(new ActionListener() {
       	 public void actionPerformed(ActionEvent e) {
-      	 	if (quit.getText().equals("Quit")) {
-      	 	   System.exit(0);
-      	 	} else {
-      	 	   assert false;
-      	 	} // if
+      	    if (quit.getText().equals("Quit")) {
+      	       System.exit(0);
+      	    } else {
+      	       assert false;
+      	    } // if
       	 } // actionPerformed
       });
 
@@ -229,9 +229,9 @@ public class Jotto {
    // Checks if a string contains only letters
    private static boolean containsOnlyLetters(String aString) {
       for (char c : aString.toCharArray()) {
-      	if (!Character.isLetter(c)) {
-      	 	return false;
-      	} // if
+      	 if (!Character.isLetter(c)) {
+      	    return false;
+      	 } // if
       } // for
       return true;
    } // containsOnlyLetters
