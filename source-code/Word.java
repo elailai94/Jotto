@@ -6,8 +6,6 @@
 // @version: 1.0 05/11/2015
 //==============================================================================
 
-// package jotto;
-
 import java.util.Scanner;
 
 // Stores one word together with its difficulty.
