@@ -25,5 +25,8 @@ java Jotto
 
 > Note: The compilation and execution step can be combined into a single step by running: **make run**.
 
+### Usage
+
+
 ### License
 Jotto is licensed under the [MIT license](https://github.com/elailai94/Jotto/blob/master/LICENSE.md).
