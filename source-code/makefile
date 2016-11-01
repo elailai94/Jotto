@@ -15,5 +15,5 @@ run: all
 	java Jotto
 
 clean:
-	rm *.class
-
+	@echo "Cleaning..."
+	find . -name "*.class" -delete
