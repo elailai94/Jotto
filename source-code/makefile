@@ -14,6 +14,8 @@ run: all
 	@echo "Running..."
 	java Jotto
 
+.PHONY: clean
+
 clean:
 	@echo "Cleaning..."
 	find . -name "*.class" -delete
